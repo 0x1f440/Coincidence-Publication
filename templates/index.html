@@ -1,0 +1,59 @@
+<!doctype html>
+<head>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" integrity="sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Myeongjo" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>우연서적</title>
+</head>
+
+<div style="position: absolute; left: 50%;">
+    <div id="overlay">
+      <i class="far fa-check-circle" style="margin-bottom: 10px"></i><br>
+        책의 링크가 복사되었습니다!
+    </div>
+</div>
+
+<div class="main-container">
+    <img class="title" src="{{ url_for('static', filename='woo.svg') }}">
+    <div class="menus">
+        <a href="/" title="책 다시 쓰기"><i class="fas fa-trash-alt"></i></a>
+        <button id="share" onclick="CopyLink(window.location.href)" title="공유"><i class="fas fa-share"></i></button>
+    </div>
+    <div class="editor">
+        {{ text }}
+        <span id="typewriter">
+            {{ last_text|safe }}
+        </span>
+    </div>
+</div>
+<script>
+
+    function overlay() {
+        document.getElementById("overlay").style.display = "block";
+        setTimeout(function(){ document.getElementById("overlay").style.display = "none"; }, 1200);
+    }
+
+    function CopyLink(text) {
+        overlay();
+    if (window.clipboardData && window.clipboardData.setData) {
+        // IE specific code path to prevent textarea being shown while dialog is visible.
+        return clipboardData.setData("Text", text);
+
+    } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+        var textarea = document.createElement("textarea");
+        textarea.textContent = text;
+        textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+        } catch (ex) {
+            console.warn("Copy to clipboard failed.", ex);
+            return false;
+        } finally {
+            document.body.removeChild(textarea);
+        }
+    }
+}
+</script>
