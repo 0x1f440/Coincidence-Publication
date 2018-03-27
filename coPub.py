@@ -29,7 +29,7 @@ def index(status):
     for noun in nouns:
         if not is_number(noun):
             url = url_for('.search', status=status, keyword=noun)
-            last_text = last_text.replace(noun, f'<a class="nouns" href="{url}">{noun}</a>')
+            last_text = last_text.replace(noun, '<a class="nouns" href="{}">{}</a>'.format(url, noun))
 
     return render_template('index.html', text=text, last_text=last_text)
 
