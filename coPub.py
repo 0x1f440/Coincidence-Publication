@@ -45,7 +45,7 @@ def is_number(s):
 @app.route('/search/<status>/<keyword>')
 def search(status, keyword):
     session = HTMLSession()
-    r = session.get(f'http://www.yes24.com/searchcorner/Search?domain=BOOK&page_size=120&query=' + quote(keyword, encoding='cp949'))
+    r = session.get('http://www.yes24.com/searchcorner/Search?domain=BOOK&page_size=120&query=' + quote(keyword, encoding='cp949'))
     links = r.html.find('.goods_infogrp > .goods_name > a')
     book_ids = []
     for link in links:
@@ -69,7 +69,7 @@ def search(status, keyword):
 def get_first_text(book_id):
     try:
         session = HTMLSession()
-        r = session.get(f'http://www.yes24.com/24/goods/{book_id}')
+        r = session.get('http://www.yes24.com/24/goods/{}'.format(book_id))
         content = r.html.find('#contents_inside', first=True).text
         m = re.match(r'.+?[.?!]', content)
 
