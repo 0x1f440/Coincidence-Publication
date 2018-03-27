@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 from flask import Flask,  render_template, url_for, request, redirect
 from requests_html import HTMLSession
