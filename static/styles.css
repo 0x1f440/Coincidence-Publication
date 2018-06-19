@@ -356,10 +356,10 @@ button:focus {
     margin-top: 7px;
 }
 
-.menus, .menus a {
+.menus button, .menus a {
     color: #ccc;
 }
-.menus:hover, .menus a:hover {
+.menus button:hover, .menus a:hover {
     color: black;
 }
 
