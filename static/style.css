@@ -325,15 +325,16 @@ input::-moz-focus-inner {
 }
 
 html {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-family: 'Nanum Myeongjo', serif;
+    font-weight: bold;
     word-wrap: break-word;
 }
 
 div.title {
     width: 100px;
     display: inline-block;
-    margin-bottom: 39px;
+    margin-bottom: 65px;
 }
 
 button {
@@ -352,6 +353,14 @@ button:focus {
 
 .menus {
     float: right;
+    margin-top: 7px;
+}
+
+.menus, .menus a {
+    color: #ccc;
+}
+.menus:hover, .menus a:hover {
+    color: black;
 }
 
 * {
