@@ -1,4 +1,4 @@
-from coPub import app
+from coPub import app as application
 
 if __name__ == "__main__":
-    app.run()
+    application.run()
