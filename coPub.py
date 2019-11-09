@@ -54,7 +54,9 @@ def is_number(s):
 @app.route('/search/<status>/<keyword>')
 def search(status, keyword):
     session = HTMLSession()
-    r = session.get('http://www.yes24.com/searchcorner/Search?domain=BOOK&page_size=40&query=' + quote(keyword, encoding='cp949'))
+    r = session.get('http://www.yes24.com/searchcorner/Search?domain=BOOK&page_size=40&query=' +
+                    quote(keyword, encoding='cp949'))
+
     links = r.html.find('.goods_infogrp > .goods_name > a')
     random.shuffle(links)
     text = None
@@ -64,9 +66,8 @@ def search(status, keyword):
         m = re.match(r'/Product/Goods/(\d+)', href)
 
         if m:
-            print(m.group(1))
             text = get_first_text(m.group(1))
-            if text is not None and kkma.nouns(text):
+            if text is not None and len(kkma.nouns(text)):
                 break
 
     if text is None:
@@ -74,7 +75,14 @@ def search(status, keyword):
 
     current = urlsafe_b64decode(status).decode()
     current += '|' + text
-    return redirect(url_for('.index', status=urlsafe_b64encode(current.encode())))
+
+    new_status = urlsafe_b64encode(current.encode())
+    try:
+        urlsafe_b64decode(status).decode().split('|')
+    except:
+        return redirect(url_for('.index', status=status))
+
+    return redirect(url_for('.index', status=new_status))
 
 
 def get_first_text(book_id):
@@ -82,8 +90,8 @@ def get_first_text(book_id):
         session = HTMLSession()
         r = session.get('http://www.yes24.com/24/goods/{}'.format(book_id))
         content = r.html.find('.txtContentText', first=True).text
-        m = re.match(r'.+?[.?!]', content).group(0)
-        return m
+        message = re.match(r'.+?[.?!]', content).group(0)
+        return message
 
     except:
         return None
