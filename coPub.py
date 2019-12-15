@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import re
+import redis
 import random
+from hashlib import md5
 from flask import Flask, render_template, url_for, redirect
 from requests_html import HTMLSession
 from konlpy.tag import Kkma
@@ -16,28 +18,34 @@ start_list = ["이것은 당신이 우연히 마주한 새로운 이야기의 �
               "그럼에도 불구하고 노력을 멈추지 않는 것이 버섯의 미덕이라고 생각합니다.",
               "폭풍이 올 것 같아요, 빨간 리본을 단 소녀가 말했지만 할머니는 듣지 못한 듯 뜨개질만 하고 있습니다."]
 
+redis = redis.Redis(host='localhost', port=6379, db=0)
+
 
 @app.route('/', defaults={'status': None})
 @app.route('/<status>')
 
 
 def index(status):
-    if status is None:
+    if status is None or redis.get(status) is None:
         last_text = random.choice(start_list)
-        return redirect(url_for('.index', status=urlsafe_b64encode(last_text.encode())))
+        h = md5(last_text.encode()).hexdigest()
+        if redis.get(h) is None:
+            redis.set(h, last_text)
+        return redirect(url_for('.index', status=h))
 
-    t = urlsafe_b64decode(status).decode().split('|')
+    t = redis.get(status).decode().split('|')
     text = ''
+
     if len(t) > 1:
         text = t[0]
     last_text = t[-1]
 
-    status = urlsafe_b64encode((text + ' ' + last_text).encode())
+    new_hash = urlsafe_b64encode((text + ' ' + last_text).encode())
 
     nouns = kkma.nouns(last_text)
     for noun in nouns:
         if not is_number(noun):
-            url = url_for('.search', status=status, keyword=noun)
+            url = url_for('.search', status=new_hash, keyword=noun)
             last_text = last_text.replace(noun, '<a class="nouns" href="{}">{}</a>'.format(url, noun))
 
     return render_template('index.html', text=text, last_text=last_text)
@@ -76,13 +84,10 @@ def search(status, keyword):
     current = urlsafe_b64decode(status).decode()
     current += '|' + text
 
-    new_status = urlsafe_b64encode(current.encode())
-    try:
-        urlsafe_b64decode(status).decode().split('|')
-    except:
-        return redirect(url_for('.index', status=status))
+    h = md5(current.encode()).hexdigest()
+    redis.set(h, current)
 
-    return redirect(url_for('.index', status=new_status))
+    return redirect(url_for('.index', status=h))
 
 
 def get_first_text(book_id):
