@@ -9,7 +9,7 @@ fake-useragent==0.1.10
 Flask==0.12.2
 idna==2.6
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 JPype1==0.6.2
 konlpy==0.4.4
 lxml==4.2.1
